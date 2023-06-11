@@ -248,6 +248,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         tf_am1.addKeyListener(this);
         Altas_Pacientes.add(tf_am1);
         btn_Busc_Cambios= new JButton(new ImageIcon("./assets/lupa2.png"));
+        btn_Busc_Cambios.addActionListener(this);
         btn_Busc_Cambios.setBounds(320,60,70,40);
         Altas_Pacientes.add(btn_Busc_Cambios);
 
@@ -465,6 +466,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     public void actionPerformed(ActionEvent e) {
         Component c=(Component) e.getSource();
         if(c==itemBajas){
+
             btn_Busc_Cambios.setEnabled(false);
             btn_Busc_Cambios.setVisible(false);
             Altas_Pacientes.setVisible(true);
@@ -498,7 +500,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             tf_Edad.setEnabled(false);
             tf_Call.setEnabled(false);
             tf_Col.setEnabled(false);
-
+            metodoDeshabilitar(btn_Busc);
             if(comboCalles.getItemCount()>0) {
                 metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboColonias1, comboCalles, comboEdad2);
                 comboCalles.setEnabled(false);
@@ -510,9 +512,11 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             }
         }// item bajas
         else if (c==itemCambios) {
-
+            Altas_Pacientes.setTitle("Actualizar Paciente");
             btn_ActusliarPac= new JButton(new ImageIcon("./assets/modificar.png"));
+            btn_ActusliarPac.addActionListener(this);
             btn_ActusliarPac.setBounds(495,320,60,50);
+
             Altas_Pacientes.add(btn_ActusliarPac);
             Altas_Pacientes.setVisible(true);
             btnAgregarPaciente.setVisible(false);
@@ -531,18 +535,28 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             tf_Col.setVisible(false);
             tf_Col.setEnabled(false);
             comboEdad2.setVisible(true);
-            comboEdad2.setEnabled(true);
+            metodoRestablecer(tf_SSN1);
             tf_SSN1.setEnabled(true);
             comboColonias1.setVisible(true);
-            comboColonias1.setEnabled(true);
             comboCalles.setVisible(true);
-            comboCalles.setEnabled(true);
+            metodoDeshabilitar(tf_am1,tf_Nombre1,comboEdad2,tf_ap1,comboColonias1,comboCalles);
             lbl1.setBounds(210, 0, 685, 40);
             btn_Busc.setEnabled(false);
             btn_Busc.setVisible(false);
             btn_Busc_Cambios.setVisible(true);
             btn_Busc_Cambios.setEnabled(true);
-
+            metodoDeshabilitar(btn_ActusliarPac,btn_Busc_Cambios);
+        }//item cambio
+        else if (c==btn_Busc_Cambios) {
+            comboEdad2.setEnabled(true);
+            comboColonias1.setEnabled(true);
+            tf_SSN1.setEnabled(false);
+          //  comboCalles.setEnabled(true);
+            tf_Nombre1.setEnabled(true);
+            tf_ap1.setEnabled(true);
+            tf_am1.setEnabled(true);
+            btn_Busc.setEnabled(true);
+            btn_ActusliarPac.setEnabled(true);
         }
     }
     public void metodoRestablecer(Component...componentes){
@@ -557,6 +571,30 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         }//foreach
 
     }
+    public void metodoDeshabilitar(Component...componentes){
+        for(Component x: componentes){
+            if(x instanceof JTextField){
+                ((JTextField)x).setEnabled(false);
+            }else if(x instanceof JComboBox<?>){
+                ((JComboBox)x).setEnabled(false);
+            } else if (x instanceof JButton) {
+                ((JButton)x).setEnabled(false);
+            }
+        }//foreach
+
+    }
+    public void metodoHabilitar(Component...componentes){
+        for(Component x: componentes){
+            if(x instanceof JTextField){
+                ((JTextField)x).setEnabled(true);
+            }else if(x instanceof JComboBox<?>){
+                ((JComboBox)x).setEnabled(true);
+            } else if (x instanceof JButton) {
+                ((JButton)x).setEnabled(false);
+            }
+        }//foreach
+
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -566,6 +604,10 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
           if(!(caracter>48&&caracter<58)) {
               e.consume();
+          }else{
+              btn_Busc.setEnabled(true);
+              btn_Busc_Cambios.setEnabled(true);
+
           }
 
       } else if (c==tf_Nombre1||c==tf_ap1||c==tf_am1) {
