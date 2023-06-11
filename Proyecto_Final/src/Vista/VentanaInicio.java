@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.sql.SQLException;
-
 public class VentanaInicio extends JFrame implements ActionListener, KeyListener {
     int cont=1;
     String[] columnNames = {"No. De Control", "Nombre", "Edad", "Apellido Paterno", "Apellido Materno", "Semestre", "Carrera"};
@@ -23,11 +22,12 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     String[]callesFracc={"Severo Cocio","Panfilo Natera","Enrique Estrada"};
     JRadioButton rb1,rb2,rb3,rb4,rb5;
     JMenu menuPaciente,menuMedicos,menuFarmacias,menuCompañiaF;
-    JInternalFrame Altas_Pacientes, Bajas_Pacientes,Cambios_Pacientes, Consultas_Pacientes,Altas_Medicos, Bajas_Medicos,Cambios_Medicos, Consultas_Medicos;
+    JInternalFrame Altas_Pacientes;
+    //, Bajas_Pacientes,Cambios_Pacientes, Consultas_Pacientes,Altas_Medicos, Bajas_Medicos,Cambios_Medicos, Consultas_Medicos
     JMenuItem itemAltas, itemBajas, itemCambios, itemConsultas,itemAltas2, itemBajas2, itemCambios2, itemConsultas2,itemAltas3, itemBajas3, itemCambios3, itemConsultas3,
             itemAltas4, itemBajas4, itemCambios4, itemConsultas4;
-    JTextField tf_SSN1,tf_Nombre1,tf_ap1,tf_am1,tf_Edad,tf_Col,tf_Call;
-    JButton btnAgregarPaciente,btnCancelarPac,btnLimpiarPac,btnBajaPac, btn_Busc,btn_ActusliarPac,btn_Busc_Cambios,btn_Consulta;
+    JTextField tf_SSN1,tf_Nombre1,tf_ap1,tf_am1,tf_Edad,tf_Col,tf_Call,tfCons;
+    JButton btnAgregarPaciente,btnCancelarPac,btnLimpiarPac,btnBajaPac, btn_Busc,btn_ActusliarPac,btn_Busc_Cambios,btn_Consulta,btnPrim,btnUlt,btnAntes,btnDespues;
     JScrollPane scrollPane, scrollPane2;
     JTable table2;
     JComboBox <String>comboEdad2,comboColonias1,comboCalles;
@@ -46,7 +46,6 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         menuBar.setBackground( new Color(109, 209, 222));
         menuPaciente = new JMenu("Paciente");
 
-
         itemAltas = new JMenuItem("Agregar");
         itemAltas.setIcon(new ImageIcon("./assets/UserAdd.png"));
         itemAltas.addActionListener(new ActionListener() {
@@ -54,8 +53,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             public void actionPerformed(ActionEvent e) {
                 Altas_Pacientes.setVisible(true);
                 btnAgregarPaciente.setVisible(true);
-                btnAgregarPaciente.setEnabled(true);
-                btnBajaPac.setEnabled(false);
+
                 btnBajaPac.setVisible(false);
                 lbl_nomBtn.setText("Agregar Paciente");
                 lbl1.setText("Altas");
@@ -63,27 +61,27 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                 lbl1.setBounds(290, 0, 685, 40);
                 Altas_Pacientes.setBackground( new Color(131, 220, 196, 203));
                 tf_Edad.setVisible(false);
-                tf_Edad.setEnabled(false);
                 tf_Call.setVisible(false);
-                tf_Call.setEnabled(false);
                 tf_Col.setVisible(false);
-                tf_Col.setEnabled(false);
+
                 tf_SSN1.setBounds(200,60,200,30);
                 comboEdad2.setVisible(true);
-                comboEdad2.setEnabled(true);
+
                 Altas_Pacientes.setTitle("Altas Pacientes");
                 comboColonias1.setVisible(true);
-                comboColonias1.setEnabled(true);
                 comboCalles.setVisible(true);
-                comboCalles.setEnabled(true);
-                btn_Busc.setEnabled(false);
                 btn_Busc.setVisible(false);
-                tf_Nombre1.setEnabled(true);
-                tf_am1.setEnabled(true);
-                tf_ap1.setEnabled(true);
                 tf_SSN1.setEnabled(false);
+                btnPrim.setVisible(false);
+                btnDespues.setVisible(false);
+                btnAntes.setVisible(false);
+                btnUlt.setVisible(false);
+                tfCons.setVisible(false);
+                btn_Consulta.setVisible(false);
+                metodoDeshabilitar(tf_Col,tf_Call,tf_Edad,btnBajaPac,btn_Busc_Cambios,btn_Busc,btn_Consulta,btnPrim,btnAntes,btnDespues,btnUlt,tfCons);
+                metodoHabilitar(tf_am1,tf_ap1,comboCalles,comboColonias1,comboEdad2,  btnAgregarPaciente,tf_Nombre1,btnAgregarPaciente);
                 metodoRestablecer(tf_SSN1,tf_Call,tf_Col,tf_am1,tf_ap1,tf_Nombre1,tf_Edad);
-                btn_Busc_Cambios.setEnabled(false);
+
                 btn_Busc_Cambios.setVisible(false);
             }
         });
@@ -150,7 +148,6 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         menuFarmacias.add(itemConsultas3);
         menuBar.add(menuFarmacias);
 
-
         menuCompañiaF=new JMenu("Compañias Farmaceuticas");
         itemAltas4 = new JMenuItem("Agregar");
         itemAltas4.setIcon(new ImageIcon("./assets/agregarEdif.png"));
@@ -184,7 +181,6 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         Altas_Pacientes.setResizable(false);
         Altas_Pacientes.setBackground( new Color(131, 220, 196, 203));
 
-
         lbl1  = new JLabel("ALTAS");
         lbl1.setFont(new Font("Arial", Font.BOLD, 30));
         lbl1.setForeground(Color.white);
@@ -194,7 +190,6 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         fondo.setBounds(0, 0, 684, 40);
         fondo.setBackground(Color.green);
         fondo.setOpaque(true);
-
         Altas_Pacientes.add(fondo);
 
         JLabel imagen = new JLabel(new ImageIcon("./assets/enfermo.png"));
@@ -212,7 +207,6 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         tf_SSN1.setBackground( new Color(198, 206, 201, 255));
         tf_SSN1.addKeyListener(this);
         Altas_Pacientes.add(tf_SSN1);
-
 
         JLabel lblNombre1=new JLabel("Nombre:");
         lblNombre1.setFont(new Font("Arial",Font.BOLD,20));
@@ -283,8 +277,6 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         Altas_Pacientes.add(comboCalles);
 
-
-
         comboColonias1 = new JComboBox<>(colonias);
         comboColonias1.setBounds(200, 370, 200, 30);
         comboColonias1.addActionListener(new ActionListener() {
@@ -310,8 +302,6 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                     }
                     comboCalles.setEnabled(true);
                 }
-
-
 
                 }
 
@@ -369,11 +359,25 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                     metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboColonias1, comboCalles, comboEdad2);
                     comboCalles.setEnabled(false);
                     comboCalles.removeAllItems();
-                } else if (tf_Edad.isVisible()) {
+                } else if (btn_ActusliarPac.isEnabled()) {
                     metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, tf_Edad, tf_Col, tf_Call);
+                    tf_SSN1.setEnabled(true);
+                } else if (btn_Consulta.isEnabled()) {
+                    tf_SSN1.setEnabled(false);
+                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2);
+                } else if (!btn_ActusliarPac.isEnabled()) {
+                    metodoDeshabilitar(comboColonias1,comboCalles,comboEdad2);
+
+                } else if (btn_Consulta.isEnabled()) {
+                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2);
+                    tf_SSN1.setEnabled(false);
                 } else{
                     metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2);
+
                 }
+                metodoDeshabilitar(btn_ActusliarPac,btn_Busc,btn_Busc_Cambios);
+                metodoDeshabilitar(comboColonias1,comboCalles,comboEdad2);
+                metodoRestablecer(tf_SSN1);
 
             }
         });
@@ -442,14 +446,45 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
        btn_Busc= new JButton(new ImageIcon("./assets/lupa.png"));
        btn_Busc.setBounds(320,60,70,40);
+       btn_Busc.addActionListener(this);
        Altas_Pacientes.add(btn_Busc);
+
+        btn_ActusliarPac= new JButton(new ImageIcon("./assets/modificar.png"));
+        btn_ActusliarPac.addActionListener(this);
+        btn_ActusliarPac.setBounds(495,320,60,50);
+
+
+        btn_Consulta= new JButton(new ImageIcon("./assets/lupa2.png"));
+        btn_Consulta.setBounds(495,320,60,50);
+        Altas_Pacientes.add(btn_Consulta);
+        btn_Consulta.addActionListener(this);
+
+        btnPrim= new JButton("<<");
+        btnPrim.setBounds(180,640,50,20);
+        Altas_Pacientes.add(btnPrim);
+
+        btnAntes= new JButton("<");
+        btnAntes.setBounds(250,640,50,20);
+        Altas_Pacientes.add(btnAntes);
+
+        tfCons= new JTextField();
+        tfCons.setBounds(310,640,40,20);
+        Altas_Pacientes.add(tfCons);
+
+        btnDespues= new JButton(">");
+        btnDespues.setBounds(360,640,50,20);
+        Altas_Pacientes.add(btnDespues);
+
+        btnUlt= new JButton(">>");
+        btnUlt.setBounds(420,640,50,20);
+        Altas_Pacientes.add(btnUlt);
 
 
 
         desktopPane.add(Altas_Pacientes);
         add(desktopPane);
 
-    }
+    }//class
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -467,39 +502,45 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         Component c=(Component) e.getSource();
         if(c==itemBajas){
 
-            btn_Busc_Cambios.setEnabled(false);
             btn_Busc_Cambios.setVisible(false);
             Altas_Pacientes.setVisible(true);
             btnAgregarPaciente.setVisible(false);
-            btnAgregarPaciente.setEnabled(false);
             btnBajaPac.setVisible(true);
-            btnBajaPac.setEnabled(true);
+
             lbl_nomBtn.setText("Eliminar Paciente");
             lbl1.setText("Bajas");
             tf_SSN1.setBounds(75,60,200,30);
             fondo.setBackground(Color.red);
             Altas_Pacientes.setBackground( new Color(255, 175, 0, 255));
+            Altas_Pacientes.setTitle("Bajas Pacientes");
+
+            btn_ActusliarPac.setVisible(false);
             tf_Edad.setVisible(true);
             tf_Col.setVisible(true);
             tf_Call.setVisible(true);
             btn_Busc.setVisible(true);
-            btn_Busc.setEnabled(true);
-            Altas_Pacientes.setTitle("Bajas Pacientes");
-
+            btn_Consulta.setVisible(false);
             comboEdad2.setVisible(false);
-            comboEdad2.setEnabled(false);
             comboCalles.setVisible(false);
-            comboCalles.setEnabled(false);
-            comboColonias1.setEnabled(false);
             comboColonias1.setVisible(false);
+            btnPrim.setVisible(false);
+            btnDespues.setVisible(false);
+            btnAntes.setVisible(false);
+            btnUlt.setVisible(false);
+            tfCons.setVisible(false);
+
             lbl1.setBounds(290, 0, 685, 40);
-            tf_Nombre1.setEnabled(false);
-            tf_am1.setEnabled(false);
-            tf_ap1.setEnabled(false);
-            tf_SSN1.setEnabled(true);
-            tf_Edad.setEnabled(false);
-            tf_Call.setEnabled(false);
-            tf_Col.setEnabled(false);
+
+
+            metodoHabilitar( tf_SSN1,btnBajaPac);
+            metodoDeshabilitar(tf_Nombre1,tf_am1, tf_ap1,tf_Edad, tf_Call,tf_Col,btnPrim,btnUlt,btnAntes,btnDespues,tfCons,comboColonias1, comboCalles,  comboEdad2,
+                    btn_Consulta,btn_Busc,btnBajaPac,btn_ActusliarPac,btn_Busc_Cambios,btnAgregarPaciente);
+
+            btnPrim.setVisible(false);
+            btnDespues.setVisible(false);
+            btnAntes.setVisible(false);
+            btnUlt.setVisible(false);
+            tfCons.setVisible(false);
             metodoDeshabilitar(btn_Busc);
             if(comboCalles.getItemCount()>0) {
                 metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboColonias1, comboCalles, comboEdad2);
@@ -513,39 +554,39 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         }// item bajas
         else if (c==itemCambios) {
             Altas_Pacientes.setTitle("Actualizar Paciente");
-            btn_ActusliarPac= new JButton(new ImageIcon("./assets/modificar.png"));
-            btn_ActusliarPac.addActionListener(this);
-            btn_ActusliarPac.setBounds(495,320,60,50);
-
+            metodoHabilitar(btn_ActusliarPac);
+            btn_ActusliarPac.setVisible(true);
             Altas_Pacientes.add(btn_ActusliarPac);
             Altas_Pacientes.setVisible(true);
             btnAgregarPaciente.setVisible(false);
-            btnAgregarPaciente.setEnabled(false);
-            btnBajaPac.setEnabled(false);
             btnBajaPac.setVisible(false);
             lbl_nomBtn.setText("Actualizar");
             lbl1.setText("Cambios Paciente");
             tf_SSN1.setBounds(75,60,200,30);
             fondo.setBackground(new Color(120, 2, 141, 255));
             Altas_Pacientes.setBackground(new Color(228, 164, 241, 255));
+
+            metodoDeshabilitar(tf_Edad,tf_Call,tf_Col,btn_Busc);
             tf_Edad.setVisible(false);
-            tf_Edad.setEnabled(false);
             tf_Call.setVisible(false);
-            tf_Call.setEnabled(false);
             tf_Col.setVisible(false);
-            tf_Col.setEnabled(false);
             comboEdad2.setVisible(true);
-            metodoRestablecer(tf_SSN1);
-            tf_SSN1.setEnabled(true);
             comboColonias1.setVisible(true);
             comboCalles.setVisible(true);
-            metodoDeshabilitar(tf_am1,tf_Nombre1,comboEdad2,tf_ap1,comboColonias1,comboCalles);
+            btn_Consulta.setVisible(false);
+            btnPrim.setVisible(false);
+            btnDespues.setVisible(false);
+            btnAntes.setVisible(false);
+            btnUlt.setVisible(false);
+            tfCons.setVisible(false);
+
             lbl1.setBounds(210, 0, 685, 40);
-            btn_Busc.setEnabled(false);
             btn_Busc.setVisible(false);
             btn_Busc_Cambios.setVisible(true);
-            btn_Busc_Cambios.setEnabled(true);
-            metodoDeshabilitar(btn_ActusliarPac,btn_Busc_Cambios);
+            metodoRestablecer(tf_SSN1);
+            metodoHabilitar(tf_SSN1,btn_Busc_Cambios);
+            metodoDeshabilitar(btn_ActusliarPac,btn_Busc_Cambios,btnAgregarPaciente,btnBajaPac,tf_am1,tf_Nombre1,comboEdad2,tf_ap1,comboColonias1,comboCalles ,btn_Consulta,btnAntes,btnUlt,btnPrim,btnDespues,tfCons);
+
         }//item cambio
         else if (c==btn_Busc_Cambios) {
             comboEdad2.setEnabled(true);
@@ -557,6 +598,51 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             tf_am1.setEnabled(true);
             btn_Busc.setEnabled(true);
             btn_ActusliarPac.setEnabled(true);
+            btnBajaPac.setEnabled(true);
+        } else if (c==btn_Busc) {
+            metodoHabilitar(btnBajaPac);
+
+        } else if (c==itemConsultas) {
+            btn_ActusliarPac.setEnabled(false);
+            btn_Consulta.setVisible(true);
+            btn_Consulta.setEnabled(true);
+            Altas_Pacientes.setTitle("Consultas Pacientes");
+            lbl_nomBtn.setText("Buscar Pacientes");
+            lbl1.setText("Consultas");
+            fondo.setBackground(new Color(131, 220, 196, 203));
+            lbl1.setBounds(260, 0, 685, 40);
+            Altas_Pacientes.setBackground( new Color(161, 156, 156, 250));
+            tf_SSN1.setBounds(200,60,200,30);
+            tf_SSN1.setEnabled(false);
+            Altas_Pacientes.setVisible(true);
+            tf_Edad.setVisible(true);
+            tf_Call.setVisible(true);
+            tf_Col.setVisible(true);
+            btnAgregarPaciente.setVisible(false);
+            btnBajaPac.setVisible(false);
+            comboEdad2.setVisible(false);
+            comboColonias1.setVisible(false);
+            comboCalles.setVisible(false);
+            btn_Busc.setVisible(false);
+            btnPrim.setVisible(false);
+            btnDespues.setVisible(false);
+            btnAntes.setVisible(false);
+            btnUlt.setVisible(false);
+            tfCons.setVisible(false);
+            btn_ActusliarPac.setVisible(false);
+
+            btnDespues.setVisible(true);
+            btnUlt.setVisible(true);
+            btnAntes.setVisible(true);
+            btnPrim.setVisible(true);
+            tfCons.setVisible(true);
+
+            metodoHabilitar(btnDespues,btnPrim,btnUlt,btnAntes);
+            metodoDeshabilitar(tf_SSN1,tf_Nombre1,tf_ap1,tf_am1,tf_Col,tf_Call,tf_Edad,btnAntes,btnPrim,btnUlt,btnDespues,tfCons);
+            metodoRestablecer(tf_SSN1,tf_Call,tf_Col,tf_am1,tf_ap1,tf_Nombre1,tf_Edad);
+
+
+            btn_Busc_Cambios.setVisible(false);
         }
     }
     public void metodoRestablecer(Component...componentes){
@@ -590,7 +676,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             }else if(x instanceof JComboBox<?>){
                 ((JComboBox)x).setEnabled(true);
             } else if (x instanceof JButton) {
-                ((JButton)x).setEnabled(false);
+                ((JButton)x).setEnabled(true);
             }
         }//foreach
 
