@@ -1,6 +1,8 @@
 package ConexionBD;
 
 
+import controlador.PacienteDAO;
+
 import java.sql.*;
 
 public class ConexionBD {
@@ -14,7 +16,7 @@ public class ConexionBD {
         //Busca el dirver para conexion
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String URL= "jdbc:mysql://localhost:3306/BD_Escuela_Topicos";
+            String URL= "jdbc:mysql://localhost:3306/poyecto_farmacias";
             conexion= DriverManager.getConnection(URL,"root","itsj");
             System.out.println("Conexion Establecida");
 

@@ -3,7 +3,8 @@ package controlador;
 
 import ConexionBD.ConexionBD;
 import modelo.Paciente;
-import modelo.Paciente;
+import modelo.Calle;
+import modelo.Colonia;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +24,7 @@ public class PacienteDAO {
          *
          */
         String sql="INSERT INTO pacientes VALUES('"+p.getSSN()+"','"+p.getNombre()+"','"+p.getPrimerAp()+"','"+p.getSegundoAp()+
-                "',"+p.getEdad()+","+p.getColonia()+",'"+p.getCalle()+"')";
+                "',"+p.getEdad()+",'"+p.getCalle()+"')";
 
         res = conexion.ejecutarInstruccionDML(sql);
 
@@ -31,10 +32,10 @@ public class PacienteDAO {
     }
 
     //==================================Bajas===================================
-    public boolean eliminarPaciente(String ssn){
+    public boolean eliminarPaciente(String SSN){
         boolean res= false;
 
-        String sql="DELETE FROM pacientes WHERE SSN='"+ssn+"'";
+        String sql="DELETE FROM pacientes WHERE SSN='"+SSN+"'";
         res = conexion.ejecutarInstruccionDML(sql);
         return res;
     }
@@ -45,7 +46,7 @@ public class PacienteDAO {
         boolean res= false;
         // UPDATE alumnos SET Nombre='x', PrimerAp="x",SegundoAp="x",Edad=0,Semestre=1,Carrera='x' WHERE NumeroControl='02';
         String sql="UPDATE pacientes SET '"+p.getSSN()+"','"+p.getPrimerAp()+"','"+p.getSegundoAp()+
-                "',"+p.getEdad()+","+p.getColonia()+",'"+p.getCalle()+"' WHERE ssn='"+p.getSSN()+"'";
+                "',"+p.getEdad()+",'"+p.getCalle()+"' WHERE ssn='"+p.getSSN()+"'";
         res = conexion.ejecutarInstruccionDML(sql);
         return res;
     }
@@ -54,8 +55,8 @@ public class PacienteDAO {
 
         return null;
     }
-    public ArrayList<Paciente> buscarAlumnos(String filtro){
-        ArrayList<Paciente> listaAlumnos= new ArrayList<>();
+    public ArrayList<Paciente> buscarPacientes(String filtro){
+        ArrayList<Paciente> listaPacientes= new ArrayList<>();
         String sql="SELECT * FROM pacientes";
 
         ResultSet rs= conexion.ejecutarConsulta(sql);
@@ -68,10 +69,9 @@ public class PacienteDAO {
                 String pa= rs.getString(3);
                 String sa= rs.getString(4);
                 byte e= rs.getByte(5);
-                String s= rs.getString(6);
-                String c= rs.getString(7);
+                int s= rs.getInt(6);
 
-                listaAlumnos.add(new Paciente(ssn,n,pa,sa,e,s,c));
+                listaPacientes.add(new Paciente(ssn,n,pa,sa,e,s));
 
             }while(rs.next());
 
@@ -79,8 +79,54 @@ public class PacienteDAO {
             throw new RuntimeException(e);
         }
 
-        return listaAlumnos;
+        return listaPacientes;
+    }
+    public ArrayList<Calle> buscarCalle(String filtro){
+        ArrayList<Calle> listaCalle= new ArrayList<>();
+        String sql="SELECT * FROM calles";
+
+        ResultSet rs= conexion.ejecutarConsulta(sql);
+        try {
+            rs.next();
+
+            do{
+                int Id_Calle= rs.getInt(1);
+                String nom_calle=rs.getString(2);
+                int Id_Colonia= rs.getInt(3);
+
+                listaCalle.add(new Calle(Id_Calle,nom_calle,Id_Colonia));
+
+            }while(rs.next());
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return listaCalle;
     }
 
+    public ArrayList<Colonia> buscarColonia(String filtro){
+        ArrayList<Colonia> listaColonia= new ArrayList<>();
+        String sql="SELECT * FROM colonias";
+
+        ResultSet rs= conexion.ejecutarConsulta(sql);
+        try {
+            rs.next();
+
+            do{
+                int Id_Col= rs.getInt(1);
+                String n=rs.getString(2);
+
+
+                listaColonia.add(new Colonia(Id_Col,n));
+
+            }while(rs.next());
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return listaColonia;
+    }
 
 }

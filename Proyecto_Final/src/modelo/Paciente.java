@@ -6,19 +6,18 @@ public class Paciente {
     private String primerAp;
     private String segundoAp;
     private byte edad;
-    private String colonia;
-    private String calle;
+
+    private int calle;
 
     public Paciente(){
 
     }
-    public Paciente(int SSN, String nombre, String primerAp, String segundoAp, byte edad, String colonia, String calle) {
+    public Paciente(int SSN, String nombre, String primerAp, String segundoAp, byte edad, int calle) {
         this.SSN = SSN;
         this.nombre = nombre;
         this.primerAp = primerAp;
         this.segundoAp = segundoAp;
         this.edad = edad;
-        this.colonia = colonia;
         this.calle = calle;
     }
 
@@ -62,19 +61,13 @@ public class Paciente {
         this.edad = edad;
     }
 
-    public String getColonia() {
-        return colonia;
-    }
 
-    public void setColonia(String colonia) {
-        this.colonia = colonia;
-    }
 
-    public String getCalle() {
+    public int getCalle() {
         return calle;
     }
 
-    public void setCalle(String calle) {
+    public void setCalle(int calle) {
         this.calle = calle;
     }
 }

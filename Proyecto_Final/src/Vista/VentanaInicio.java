@@ -1,4 +1,6 @@
 package Vista;
+import controlador.PacienteDAO;
+
 import javax.print.CancelablePrintJob;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,13 +12,14 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.sql.SQLException;
 public class VentanaInicio extends JFrame implements ActionListener, KeyListener {
+    PacienteDAO p1= new PacienteDAO();
     int cont=1;
     String[] columnNames = {"No. De Control", "Nombre", "Edad", "Apellido Paterno", "Apellido Materno", "Semestre", "Carrera"};
     DefaultTableModel model = new DefaultTableModel(columnNames, 0);
     String datos[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
     String [] items2 = {"Elige Carrera:", "ISC", "IM", "IIA", "LA", "LC"};
     JMenuBar menuBar;
-    String [] colonias = {"Elige una Colonia:", "Niños Heroes", "Frac. Guadalupe", "Las Quintas"};
+    String [] colonias ;
     String[]callesNiñosHeroes={"Juan Escutia","Juan de la Barrera","Francisco I Madero"};
     String[]callesQuintas={"Luis Moya","Suave Patria","Garcia Salinas"};
     String[]callesFracc={"Severo Cocio","Panfilo Natera","Enrique Estrada"};
@@ -33,6 +36,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     JComboBox <String>comboEdad2,comboColonias1,comboCalles;
     JLabel lbl1, lbl_nomBtn,fondo;
     public VentanaInicio(){
+        llenarComboColonia();
         getContentPane().setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Sistema Farmacia");
@@ -378,7 +382,8 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                 metodoDeshabilitar(btn_ActusliarPac,btn_Busc,btn_Busc_Cambios);
                 metodoDeshabilitar(comboColonias1,comboCalles,comboEdad2);
                 metodoRestablecer(tf_SSN1);
-
+                comboColonias1.setEnabled(true);
+                comboEdad2.setEnabled(true);
             }
         });
         Altas_Pacientes.add(btnLimpiarPac);
@@ -461,10 +466,12 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         btnPrim= new JButton("<<");
         btnPrim.setBounds(180,640,50,20);
+        btnPrim.addActionListener(this);
         Altas_Pacientes.add(btnPrim);
 
         btnAntes= new JButton("<");
         btnAntes.setBounds(250,640,50,20);
+        btnAntes.addActionListener(this);
         Altas_Pacientes.add(btnAntes);
 
         tfCons= new JTextField();
@@ -473,10 +480,12 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         btnDespues= new JButton(">");
         btnDespues.setBounds(360,640,50,20);
+        btnDespues.addActionListener(this);
         Altas_Pacientes.add(btnDespues);
 
         btnUlt= new JButton(">>");
         btnUlt.setBounds(420,640,50,20);
+        btnUlt.addActionListener(this);
         Altas_Pacientes.add(btnUlt);
 
 
@@ -655,6 +664,17 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                 ((JSpinner)x).setValue(String.valueOf(1));
             }
         }//foreach
+
+    }
+    public void llenarComboColonia(){
+        int size=p1.buscarColonia("").size();
+        colonias= new String[size+1];
+        colonias[0]="Elige una Colonia:";
+        for(int i=1;i<size+1;i++){
+            colonias[i]=p1.buscarColonia("").get(i-1).getNombreColonia();
+        }
+    }
+    public void llenarComboCalles(){
 
     }
     public void metodoDeshabilitar(Component...componentes){
