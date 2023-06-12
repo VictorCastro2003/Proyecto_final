@@ -1,5 +1,6 @@
 package Vista;
 import controlador.PacienteDAO;
+import modelo.Paciente;
 
 import javax.print.CancelablePrintJob;
 import javax.swing.*;
@@ -9,21 +10,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
+
 public class VentanaInicio extends JFrame implements ActionListener, KeyListener {
     PacienteDAO p1= new PacienteDAO();
-    int cont=1;
+    int cont=3;
+    int posVar=0;
+    int cont2 =0;
     String[] columnNames = {"No. De Control", "Nombre", "Edad", "Apellido Paterno", "Apellido Materno", "Semestre", "Carrera"};
     DefaultTableModel model = new DefaultTableModel(columnNames, 0);
     String datos[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
     String [] items2 = {"Elige Carrera:", "ISC", "IM", "IIA", "LA", "LC"};
     JMenuBar menuBar;
-    String [] colonias ;
-    String[]callesNiñosHeroes={"Juan Escutia","Juan de la Barrera","Francisco I Madero"};
-    String[]callesQuintas={"Luis Moya","Suave Patria","Garcia Salinas"};
-    String[]callesFracc={"Severo Cocio","Panfilo Natera","Enrique Estrada"};
-    JRadioButton rb1,rb2,rb3,rb4,rb5;
+    int ssn =p1.buscarPacientes("").size()+2;
+    String [] colonias ,calles;
+
     JMenu menuPaciente,menuMedicos,menuFarmacias,menuCompañiaF;
     JInternalFrame Altas_Pacientes;
     //, Bajas_Pacientes,Cambios_Pacientes, Consultas_Pacientes,Altas_Medicos, Bajas_Medicos,Cambios_Medicos, Consultas_Medicos
@@ -37,11 +41,13 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     JLabel lbl1, lbl_nomBtn,fondo;
     public VentanaInicio(){
         llenarComboColonia();
+
         getContentPane().setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Sistema Farmacia");
         setSize(700, 780);
         setLocationRelativeTo(null);
+
         setVisible(true);
         setResizable(false);
 
@@ -55,9 +61,9 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         itemAltas.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 Altas_Pacientes.setVisible(true);
                 btnAgregarPaciente.setVisible(true);
-
                 btnBajaPac.setVisible(false);
                 lbl_nomBtn.setText("Agregar Paciente");
                 lbl1.setText("Altas");
@@ -87,7 +93,16 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                 metodoRestablecer(tf_SSN1,tf_Call,tf_Col,tf_am1,tf_ap1,tf_Nombre1,tf_Edad);
 
                 btn_Busc_Cambios.setVisible(false);
+                tf_SSN1.setEnabled(true);
+
+                tf_SSN1.setText(String.valueOf(ssn));
+                tf_SSN1.setForeground( new Color(0, 76, 217));
+                tf_SSN1.setFont(new Font("Arial",Font.BOLD,20));
+                tf_SSN1.setEnabled(false);
+
+
             }
+
         });
         menuPaciente.add(itemAltas);
 
@@ -207,8 +222,9 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         Altas_Pacientes.add(lbl_SSN);
 
          tf_SSN1= new JTextField(10);
+        tf_SSN1.setText(String.valueOf(cont));
         tf_SSN1.setBounds(200,60,200,30);
-        tf_SSN1.setBackground( new Color(198, 206, 201, 255));
+        tf_SSN1.setBackground(  new Color(255, 255, 255, 255));
         tf_SSN1.addKeyListener(this);
         Altas_Pacientes.add(tf_SSN1);
 
@@ -219,7 +235,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
          tf_Nombre1= new JTextField(10);
         tf_Nombre1.setBounds(200,110,200,30);
-        tf_Nombre1.setBackground( new Color(198, 206, 201, 255));
+        tf_Nombre1.setBackground(  new Color(255, 255, 255, 255));
         tf_Nombre1.addKeyListener(this);
         Altas_Pacientes.add(tf_Nombre1);
 
@@ -231,7 +247,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         tf_ap1= new JTextField();
         tf_ap1.setBounds(200,160,200,30);
-        tf_ap1.setBackground( new Color(198, 206, 201, 255));
+        tf_ap1.setBackground(   new Color(255, 255, 255, 255));
         tf_ap1.addKeyListener(this);
         Altas_Pacientes.add(tf_ap1);
 
@@ -242,7 +258,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         tf_am1= new JTextField();
         tf_am1.setBounds(200,210,200,30);
-        tf_am1.setBackground( new Color(198, 206, 201, 255));
+        tf_am1.setBackground(   new Color(255, 255, 255, 255));
         tf_am1.addKeyListener(this);
         Altas_Pacientes.add(tf_am1);
         btn_Busc_Cambios= new JButton(new ImageIcon("./assets/lupa2.png"));
@@ -277,6 +293,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         comboCalles= new JComboBox<>();
         comboCalles.setBounds(200,410,200,30);
+        comboCalles.addActionListener(this);
         comboCalles.setEnabled(false);
 
         Altas_Pacientes.add(comboCalles);
@@ -286,28 +303,13 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         comboColonias1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                if(comboColonias1.getSelectedIndex()==1){
+                Component c=(Component) e.getSource();
+              if (comboColonias1.getSelectedIndex()>=0 && c==comboColonias1) {
+                    int pos=comboColonias1.getSelectedIndex();
                     comboCalles.removeAllItems();
-                        for(int i=0;i<callesNiñosHeroes.length;i++){
-                            comboCalles.addItem(callesNiñosHeroes[i]);
-                        }
-                    comboCalles.setEnabled(true);
-                    }else if(comboColonias1.getSelectedIndex()==2){
-                    comboCalles.removeAllItems();
-                    for(int i=0;i<callesNiñosHeroes.length;i++){
-                        comboCalles.addItem(callesFracc[i]);
-                    }
-                    comboCalles.setEnabled(true);
-                }else if(comboColonias1.getSelectedIndex()==3){
-                    comboCalles.removeAllItems();
-                    for(int i=0;i<callesNiñosHeroes.length;i++){
-                        comboCalles.addItem(callesQuintas[i]);
-                    }
-                    comboCalles.setEnabled(true);
+                    LlenarCB_Calles(pos);
                 }
-
-                }
+            }
 
         });
         Altas_Pacientes.add(comboColonias1);
@@ -325,25 +327,15 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         btnAgregarPaciente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(tf_SSN1.getText().equals("")||tf_Nombre1.getText().equals("")||tf_ap1.getText().equals("")||tf_am1.getText().equals("")||comboEdad2.getSelectedIndex()==0||comboColonias1.getSelectedIndex()==0){
-                    JOptionPane.showMessageDialog(getContentPane(),"Error, falta algun dato, Verifique por favor...");
-                }else if(tf_SSN1.getText().startsWith(" ")||tf_Nombre1.getText().startsWith(" ")||tf_ap1.getText().startsWith(" ")||tf_am1.getText().startsWith(" ")){
-                    if(tf_SSN1.getText().startsWith(" ")){
-                        JOptionPane.showMessageDialog(getContentPane(),"Los campos no deben comenzar con espacios");
-                       metodoRestablecer(tf_SSN1);
-                    }else if(tf_Nombre1.getText().startsWith(" ")){
-                        JOptionPane.showMessageDialog(getContentPane(),"Los campos no deben comenzar con espacios");
-                        metodoRestablecer(tf_Nombre1);
-                    } else if (tf_ap1.getText().startsWith(" ")) {
-                        JOptionPane.showMessageDialog(getContentPane(),"Los campos no deben comenzar con espacios");
-                        metodoRestablecer(tf_ap1);
-                    } else if (tf_am1.getText().startsWith(" ")) {
-                        JOptionPane.showMessageDialog(getContentPane(),"Los campos no deben comenzar con espacios");
-                        metodoRestablecer(tf_am1);
-                    }else{
+                if(tf_Nombre1.getText().equals("")||tf_ap1.getText().equals("")||tf_am1.getText().equals("")||comboEdad2.getSelectedIndex()==0||comboColonias1.getSelectedIndex()==0){
+                    JOptionPane.showMessageDialog(getContentPane(),"Error, no se puede ingresar un paciente(Faltan datos o datos incorrectos)");
+                }else{
 
-                    }
-
+                    tf_SSN1.setText(String.valueOf(ssn));
+                PacienteDAO p2= new PacienteDAO();
+                Paciente pm1= new Paciente(ssn,tf_Nombre1.getText(),tf_ap1.getText(),tf_am1.getText(), (byte) Integer.parseInt(comboEdad2.getItemAt(comboEdad2.getSelectedIndex())),posVar);
+                System.out.println(p2.agregarPaciente(pm1));
+                cont=cont+1;
                 }
             }
         });
@@ -425,10 +417,12 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         btnBajaPac.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(!(tf_SSN1.getText().equals(""))){
-                    JOptionPane.showMessageDialog(getContentPane(),"No se pudo eliminar");
-                }else {
+                if(tf_SSN1.getText()!=""){
+                    System.out.println(p1.eliminarPaciente(tf_SSN1.getText()));
+                    tf_SSN1.setText("");
 
+                }else {
+                    JOptionPane.showMessageDialog(getContentPane(),"No se pudo eliminar");
                 }
             }
         });
@@ -436,17 +430,17 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         tf_Edad= new JTextField();
         tf_Edad.setBounds(200,260,200,30);
-        tf_Edad.setBackground( new Color(198, 206, 201, 255));
+        tf_Edad.setBackground(   new Color(255, 255, 255, 255));
         Altas_Pacientes.add(tf_Edad);
 
         tf_Col= new JTextField();
         tf_Col.setBounds(200, 370, 200, 30);
-        tf_Col.setBackground( new Color(198, 206, 201, 255));
+        tf_Col.setBackground(   new Color(255, 255, 255, 255));
        Altas_Pacientes.add(tf_Col);
 
        tf_Call= new JTextField();
        tf_Call.setBounds(200,410,200,30);
-        tf_Call.setBackground( new Color(198, 206, 201, 255));
+        tf_Call.setBackground(  new Color(255, 255, 255, 255));
        Altas_Pacientes.add(tf_Call);
 
        btn_Busc= new JButton(new ImageIcon("./assets/lupa.png"));
@@ -487,7 +481,6 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         btnUlt.setBounds(420,640,50,20);
         btnUlt.addActionListener(this);
         Altas_Pacientes.add(btnUlt);
-
 
 
         desktopPane.add(Altas_Pacientes);
@@ -652,6 +645,13 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
 
             btn_Busc_Cambios.setVisible(false);
+        }else if (comboCalles.getSelectedIndex()>0) {
+            for (int i=0;i<p1.buscarCalle("").size(); i++){
+                if(comboCalles.getSelectedItem().equals(p1.buscarCalle("").get(i).getNombre_Calle())){
+                    posVar= p1.buscarCalle("").get(i).getID_Calle();
+                    break;
+                }
+            }
         }
     }
     public void metodoRestablecer(Component...componentes){
@@ -673,10 +673,25 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         for(int i=1;i<size+1;i++){
             colonias[i]=p1.buscarColonia("").get(i-1).getNombreColonia();
         }
-    }
-    public void llenarComboCalles(){
+
 
     }
+    public void LlenarCB_Calles(int pos) {
+        comboCalles.addItem("Selecciona tu calle");
+        if (pos == 0) {
+
+        } else {
+            int tamaño1 = p1.buscarCalle("").size();
+            for (int i = 0; i < tamaño1; i++) {
+                if (pos == p1.buscarCalle("").get(i).getID_Colonia()) {
+                    comboCalles.addItem(p1.buscarCalle("").get(i).getNombre_Calle());
+                }
+
+            }//for
+
+        }
+    }
+
     public void metodoDeshabilitar(Component...componentes){
         for(Component x: componentes){
             if(x instanceof JTextField){
