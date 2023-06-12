@@ -39,6 +39,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     JTable table2;
     JComboBox <String>comboEdad2,comboColonias1,comboCalles;
     JLabel lbl1, lbl_nomBtn,fondo;
+    Paciente pm1;
     public VentanaInicio(){
         llenarComboColonia();
 
@@ -95,10 +96,11 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                 btn_Busc_Cambios.setVisible(false);
                 tf_SSN1.setEnabled(true);
 
+
                 tf_SSN1.setText(String.valueOf(ssn));
                 tf_SSN1.setForeground( new Color(0, 76, 217));
                 tf_SSN1.setFont(new Font("Arial",Font.BOLD,20));
-                tf_SSN1.setEnabled(false);
+                tf_SSN1.setEditable(false);
 
 
             }
@@ -332,9 +334,8 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                 }else{
 
                     tf_SSN1.setText(String.valueOf(ssn));
-                PacienteDAO p2= new PacienteDAO();
-                Paciente pm1= new Paciente(ssn,tf_Nombre1.getText(),tf_ap1.getText(),tf_am1.getText(), (byte) Integer.parseInt(comboEdad2.getItemAt(comboEdad2.getSelectedIndex())),posVar);
-                System.out.println(p2.agregarPaciente(pm1));
+                 pm1= new Paciente(ssn,tf_Nombre1.getText(),tf_ap1.getText(),tf_am1.getText(), (byte) Integer.parseInt(comboEdad2.getItemAt(comboEdad2.getSelectedIndex())),posVar);
+                System.out.println(p1.agregarPaciente(pm1));
                 cont=cont+1;
                 }
             }
@@ -355,7 +356,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                     metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboColonias1, comboCalles, comboEdad2);
                     comboCalles.setEnabled(false);
                     comboCalles.removeAllItems();
-                } else if (btn_ActusliarPac.isEnabled()) {
+                } else if (btn_ActusliarPac.isEnabled()||btn_Busc.isEnabled()) {
                     metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, tf_Edad, tf_Col, tf_Call);
                     tf_SSN1.setEnabled(true);
                 } else if (btn_Consulta.isEnabled()) {
@@ -417,13 +418,23 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         btnBajaPac.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(tf_SSN1.getText()!=""){
-                    System.out.println(p1.eliminarPaciente(tf_SSN1.getText()));
-                    tf_SSN1.setText("");
-
+                 if (Integer.parseInt(tf_SSN1.getText())<ssn) {
+                        for(int i=0;i<ssn;i++){
+                            if(Integer.parseInt(tf_SSN1.getText())==p1.buscarPacientes("").get(i).getSSN()){
+                                System.out.println(p1.eliminarPaciente(tf_SSN1.getText()));
+                                tf_SSN1.setText("");
+                                metodoRestablecer(tf_SSN1,tf_Edad,tf_Nombre1,tf_ap1,tf_Col,tf_Call,tf_am1);
+                                btnBajaPac.setEnabled(false);
+                            }
+                        }
+                } else if(tf_SSN1.getText().equals("")){
+                    JOptionPane.showMessageDialog(getContentPane(),"No se pudo eliminar, SNN incorrecto");
+                     tf_SSN1.setText("");
+                     btnBajaPac.setEnabled(false);
                 }else {
-                    JOptionPane.showMessageDialog(getContentPane(),"No se pudo eliminar");
-                }
+                     JOptionPane.showMessageDialog(getContentPane(),"No se pudo eliminar");
+                     btnBajaPac.setEnabled(false);
+                 }
             }
         });
         Altas_Pacientes.add(btnBajaPac);
@@ -503,7 +514,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     public void actionPerformed(ActionEvent e) {
         Component c=(Component) e.getSource();
         if(c==itemBajas){
-
+            tf_SSN1.setEditable(true);
             btn_Busc_Cambios.setVisible(false);
             Altas_Pacientes.setVisible(true);
             btnAgregarPaciente.setVisible(false);
@@ -593,7 +604,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         else if (c==btn_Busc_Cambios) {
             comboEdad2.setEnabled(true);
             comboColonias1.setEnabled(true);
-            tf_SSN1.setEnabled(false);
+            tf_SSN1.setEditable(false);
           //  comboCalles.setEnabled(true);
             tf_Nombre1.setEnabled(true);
             tf_ap1.setEnabled(true);
@@ -603,6 +614,25 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             btnBajaPac.setEnabled(true);
         } else if (c==btn_Busc) {
             metodoHabilitar(btnBajaPac);
+
+            int posT= Integer.parseInt(tf_SSN1.getText());
+
+            for(int i =0;i<p1.buscarPacientes("").size();i++){
+                if(posT== p1.buscarPacientes("").get(i).getSSN()){
+                    tf_Nombre1.setText(p1.buscarPacientes("").get(i).getNombre());
+                    tf_ap1.setText( p1.buscarPacientes("").get(i).getPrimerAp());
+                    tf_am1.setText( p1.buscarPacientes("").get(i).getSegundoAp());
+                    tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(i).getEdad()));
+                    tf_Call.setText(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()-1).getNombre_Calle());
+                    tf_Col.setText(p1.buscarColonia("").get(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()).getID_Colonia()-1).getNombreColonia());
+                }
+                else {
+                    JOptionPane.showMessageDialog(getContentPane(),"Ese registro no se encuentra disponible o no existe!!!");
+                    btnBajaPac.setEnabled(false);
+                    tf_SSN1.setText("");
+                }
+            }
+
 
         } else if (c==itemConsultas) {
             btn_ActusliarPac.setEnabled(false);
@@ -652,6 +682,26 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                     break;
                 }
             }
+        } else if (c==btn_Busc_Cambios) {
+            metodoHabilitar(btnBajaPac);
+
+            int posT= Integer.parseInt(tf_SSN1.getText());
+
+            for(int i =0;i<p1.buscarPacientes("").size();i++){
+                if(posT== p1.buscarPacientes("").get(i).getSSN()){
+                    tf_Nombre1.setText(p1.buscarPacientes("").get(i).getNombre());
+                    tf_ap1.setText( p1.buscarPacientes("").get(i).getPrimerAp());
+                    tf_am1.setText( p1.buscarPacientes("").get(i).getSegundoAp());
+                    tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(i).getEdad()));
+                    tf_Call.setText(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()-1).getNombre_Calle());
+                    tf_Col.setText(p1.buscarColonia("").get(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()).getID_Colonia()-1).getNombreColonia());
+                }
+                else {
+                    JOptionPane.showMessageDialog(getContentPane(),"Ese registro no se encuentra disponible o no existe!!!");
+                    btnBajaPac.setEnabled(false);
+                    tf_SSN1.setText("");
+                }
+            }
         }
     }
     public void metodoRestablecer(Component...componentes){
@@ -695,7 +745,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     public void metodoDeshabilitar(Component...componentes){
         for(Component x: componentes){
             if(x instanceof JTextField){
-                ((JTextField)x).setEnabled(false);
+                ((JTextField)x).setEditable(false);
             }else if(x instanceof JComboBox<?>){
                 ((JComboBox)x).setEnabled(false);
             } else if (x instanceof JButton) {
@@ -707,7 +757,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     public void metodoHabilitar(Component...componentes){
         for(Component x: componentes){
             if(x instanceof JTextField){
-                ((JTextField)x).setEnabled(true);
+                ((JTextField)x).setEditable(true);
             }else if(x instanceof JComboBox<?>){
                 ((JComboBox)x).setEnabled(true);
             } else if (x instanceof JButton) {
@@ -723,7 +773,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         char caracter=e.getKeyChar();
       if(c==tf_SSN1){
 
-          if(!(caracter>48&&caracter<58)) {
+          if(!(caracter>47&&caracter<58)) {
               e.consume();
           }else{
               btn_Busc.setEnabled(true);
