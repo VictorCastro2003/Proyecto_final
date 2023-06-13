@@ -12,62 +12,62 @@ import java.util.ArrayList;
 public class UsuarioDAO implements Runnable{
 
 	ConexionBD conexion;
-	
+
 	private String filtro;
 
 	public void setFiltro(String filtro) {
 		this.filtro = filtro;
 	}
 
-	
 
 	public UsuarioDAO() {
 		conexion = new ConexionBD();
 	}
-	
-	
+
+
 	//Metodos para ALTAS, BJAS, CAMBIOS, CONSULTAS
 	public boolean insertarRragistro(Usuario u) {
 		boolean resultado = false;
-		
+
 		String sql="INSERT INTO usuarios VALUES('"+u.getNoUsuario()+"', '"+u.getNombre()+"', '"+u.getContraseña()+"'8);";
+		System.out.println(sql);
 		resultado = conexion.ejecutarInstruccionDML(sql);
-		
+
 		return resultado;
 	}
-	
-	
+
+
 	public boolean eliminarRegistro(String id){
-		
+
 		boolean resultado = false;
-		
-		
+
+
 		String sql =  "DELETE FROM Usuarios WHERE noUsuario = \""+id+"\"";
 		resultado = conexion.ejecutarInstruccionDML(sql);
-		
+
 		return resultado;
 	}
-	
-	
+
+
 	public boolean modificarRegistro(Usuario u) {
-		
+
 		boolean resultado = false;
 
 		String sql = "UPDATE usuarios SET Nombre='"+u.getNombre()+"', Contrase�a='"+u.getContraseña()+"', Tipo='"+"'"
 				+" WHERE noUsuario = '" + u.getNoUsuario()+"';";
-		                
-		
+
+
 		resultado = conexion.ejecutarInstruccionDML(sql);
-		
+
 		return resultado;
 	}
-	
+
 	//CONSULTAS
 	public ArrayList<Usuario> buscarUsuario (String filtro){
 		ArrayList<Usuario> listaUsuarios = new ArrayList<>();
-		
+
 		ResultSet rs = conexion.ejecutarConsulta(filtro);
-		
+
 		try {
 			if(rs.next()) {
 				do {
@@ -84,8 +84,8 @@ public class UsuarioDAO implements Runnable{
 			e.printStackTrace();
 			Login.bandera = false;
 		}
-		
-		
+
+
 		return listaUsuarios;
 	}
 
@@ -93,11 +93,8 @@ public class UsuarioDAO implements Runnable{
 	@Override
 	public void run() {
 		buscarUsuario(filtro);
-		
+
 	}
 
 
-	
-	
-	
 }

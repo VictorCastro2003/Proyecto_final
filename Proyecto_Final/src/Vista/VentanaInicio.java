@@ -1,8 +1,6 @@
 package Vista;
 import controlador.PacienteDAO;
 import modelo.Paciente;
-
-import javax.print.CancelablePrintJob;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -18,14 +16,17 @@ import java.util.Arrays;
 public class VentanaInicio extends JFrame implements ActionListener, KeyListener {
     PacienteDAO p1= new PacienteDAO();
     int cont=3;
+    int ContD;
     int posVar=0;
     int cont2 =0;
-    String[] columnNames = {"No. De Control", "Nombre", "Edad", "Apellido Paterno", "Apellido Materno", "Semestre", "Carrera"};
+    String[] columnNames = {"SSN", "Nombre", "Apellido Paterno", "Apellido Materno", "Edad","Calle"};
     DefaultTableModel model = new DefaultTableModel(columnNames, 0);
     String datos[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
-    String [] items2 = {"Elige Carrera:", "ISC", "IM", "IIA", "LA", "LC"};
     JMenuBar menuBar;
+
+
     int ssn =p1.buscarPacientes("").size()+2;
+
     String [] colonias ,calles;
 
     JMenu menuPaciente,menuMedicos,menuFarmacias,menuCompañiaF;
@@ -42,7 +43,14 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     Paciente pm1;
     public VentanaInicio(){
         llenarComboColonia();
+        cont2=p1.buscarPacientes("").size();
+        for(int i=0;i<p1.buscarPacientes("").size();i++){
 
+        }
+        ssn++;
+
+
+        System.out.println(ssn);
         getContentPane().setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Sistema Farmacia");
@@ -62,7 +70,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         itemAltas.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                actualizarTablas(table2);
                 Altas_Pacientes.setVisible(true);
                 btnAgregarPaciente.setVisible(true);
                 btnBajaPac.setVisible(false);
@@ -207,7 +215,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         lbl1.setForeground(Color.white);
         lbl1.setBounds(290, 0, 685, 40);
         Altas_Pacientes.add(lbl1);
-         fondo = new JLabel();
+        fondo = new JLabel();
         fondo.setBounds(0, 0, 684, 40);
         fondo.setBackground(Color.green);
         fondo.setOpaque(true);
@@ -223,7 +231,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         Altas_Pacientes.add(lbl_SSN);
 
-         tf_SSN1= new JTextField(10);
+        tf_SSN1= new JTextField(10);
         tf_SSN1.setText(String.valueOf(cont));
         tf_SSN1.setBounds(200,60,200,30);
         tf_SSN1.setBackground(  new Color(255, 255, 255, 255));
@@ -235,7 +243,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         lblNombre1.setBounds(20,110,100,30);
         Altas_Pacientes.add(lblNombre1);
 
-         tf_Nombre1= new JTextField(10);
+        tf_Nombre1= new JTextField(10);
         tf_Nombre1.setBounds(200,110,200,30);
         tf_Nombre1.setBackground(  new Color(255, 255, 255, 255));
         tf_Nombre1.addKeyListener(this);
@@ -269,7 +277,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         Altas_Pacientes.add(btn_Busc_Cambios);
 
 
-        JLabel lblEdad = new JLabel("EDAD: ");
+        JLabel lblEdad = new JLabel("Edad: ");
         lblEdad.setFont(new Font("Arial",Font.BOLD,20));
         lblEdad.setBounds(25,260,150,30);
         Altas_Pacientes.add(lblEdad);
@@ -306,7 +314,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             @Override
             public void actionPerformed(ActionEvent e) {
                 Component c=(Component) e.getSource();
-              if (comboColonias1.getSelectedIndex()>=0 && c==comboColonias1) {
+                if (comboColonias1.getSelectedIndex()>=0 && c==comboColonias1) {
                     int pos=comboColonias1.getSelectedIndex();
                     comboCalles.removeAllItems();
                     LlenarCB_Calles(pos);
@@ -321,7 +329,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         lbl_Calles.setBounds(20,410,100,30);
         Altas_Pacientes.add(lbl_Calles);
 
-         lbl_nomBtn= new JLabel("Añadir Paciente");
+        lbl_nomBtn= new JLabel("Añadir Paciente");
         lbl_nomBtn.setBounds(480,300,100,20);
         Altas_Pacientes.add(lbl_nomBtn);
         btnAgregarPaciente= new JButton(new ImageIcon("./assets/añadirPaciente.png"));
@@ -334,9 +342,12 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
                 }else{
 
                     tf_SSN1.setText(String.valueOf(ssn));
-                 pm1= new Paciente(ssn,tf_Nombre1.getText(),tf_ap1.getText(),tf_am1.getText(), (byte) Integer.parseInt(comboEdad2.getItemAt(comboEdad2.getSelectedIndex())),posVar);
-                System.out.println(p1.agregarPaciente(pm1));
-                cont=cont+1;
+                    pm1= new Paciente(ssn,tf_Nombre1.getText(),tf_ap1.getText(),tf_am1.getText(), (byte) Integer.parseInt(comboEdad2.getItemAt(comboEdad2.getSelectedIndex())),posVar);
+                    System.out.println(p1.agregarPaciente(pm1));
+                    JOptionPane.showMessageDialog(getContentPane(),"Se agrego correctamente");
+                    cont=cont+1;
+                    actualizarTablas(table2);
+                    ssn++;
                 }
             }
         });
@@ -353,30 +364,38 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(comboCalles.getItemCount()>0) {
-                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboColonias1, comboCalles, comboEdad2);
+                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboColonias1);
                     comboCalles.setEnabled(false);
                     comboCalles.removeAllItems();
+                    tf_SSN1.setEditable(true);
                 } else if (btn_ActusliarPac.isEnabled()||btn_Busc.isEnabled()) {
-                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, tf_Edad, tf_Col, tf_Call);
+                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, tf_Edad, tf_Col, tf_Call,comboEdad2);
+                    tf_SSN1.setEditable(true);
                     tf_SSN1.setEnabled(true);
                 } else if (btn_Consulta.isEnabled()) {
                     tf_SSN1.setEnabled(false);
-                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2);
+                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2,tf_Edad,tf_Col,tf_Call);
+                    tf_SSN1.setEditable(false);
                 } else if (!btn_ActusliarPac.isEnabled()) {
                     metodoDeshabilitar(comboColonias1,comboCalles,comboEdad2);
 
                 } else if (btn_Consulta.isEnabled()) {
                     metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2);
                     tf_SSN1.setEnabled(false);
+                } else if (btnAgregarPaciente.isEnabled()) {
+                    metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2);
+                    comboColonias1.setEnabled(true);
+                    comboEdad2.setEnabled(true);
                 } else{
                     metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2);
-
                 }
                 metodoDeshabilitar(btn_ActusliarPac,btn_Busc,btn_Busc_Cambios);
                 metodoDeshabilitar(comboColonias1,comboCalles,comboEdad2);
                 metodoRestablecer(tf_SSN1);
-                comboColonias1.setEnabled(true);
                 comboEdad2.setEnabled(true);
+                comboColonias1.setEnabled(true);
+
+
             }
         });
         Altas_Pacientes.add(btnLimpiarPac);
@@ -408,7 +427,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         });
         Altas_Pacientes.add(btnCancelarPac);
 
-         table2 = new JTable(model);
+        table2 = new JTable(model);
         scrollPane2=  new JScrollPane(table2);
         scrollPane2.setBounds(50,480,570,150);
         Altas_Pacientes.add(scrollPane2);
@@ -418,23 +437,27 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         btnBajaPac.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                 if (Integer.parseInt(tf_SSN1.getText())<ssn) {
-                        for(int i=0;i<ssn;i++){
-                            if(Integer.parseInt(tf_SSN1.getText())==p1.buscarPacientes("").get(i).getSSN()){
-                                System.out.println(p1.eliminarPaciente(tf_SSN1.getText()));
-                                tf_SSN1.setText("");
-                                metodoRestablecer(tf_SSN1,tf_Edad,tf_Nombre1,tf_ap1,tf_Col,tf_Call,tf_am1);
-                                btnBajaPac.setEnabled(false);
-                            }
+
+                if (Integer.parseInt(tf_SSN1.getText())<=ssn){
+                    for(int i=0;i<ssn;i++){
+                        if(Integer.parseInt(tf_SSN1.getText())<=p1.buscarPacientes("").get(cont2).getSSN()&&cont2>1){
+                            System.out.println(p1.eliminarPaciente(tf_SSN1.getText()));
+                            tf_SSN1.setText("");
+                            metodoRestablecer(tf_SSN1,tf_Edad,tf_Nombre1,tf_ap1,tf_Col,tf_Call,tf_am1);
+                            btnBajaPac.setEnabled(false);
+                            actualizarTablas(table2);
+                            ssn--;
                         }
+                    }
+                    JOptionPane.showMessageDialog(getContentPane(),"Se elimino correctamente");
                 } else if(tf_SSN1.getText().equals("")){
                     JOptionPane.showMessageDialog(getContentPane(),"No se pudo eliminar, SNN incorrecto");
-                     tf_SSN1.setText("");
-                     btnBajaPac.setEnabled(false);
-                }else {
-                     JOptionPane.showMessageDialog(getContentPane(),"No se pudo eliminar");
-                     btnBajaPac.setEnabled(false);
-                 }
+                    tf_SSN1.setText("");
+                    btnBajaPac.setEnabled(false);
+                }else  {
+                    JOptionPane.showMessageDialog(getContentPane(),"No se pudo eliminar");
+                    btnBajaPac.setEnabled(false);
+                }
             }
         });
         Altas_Pacientes.add(btnBajaPac);
@@ -447,17 +470,17 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         tf_Col= new JTextField();
         tf_Col.setBounds(200, 370, 200, 30);
         tf_Col.setBackground(   new Color(255, 255, 255, 255));
-       Altas_Pacientes.add(tf_Col);
+        Altas_Pacientes.add(tf_Col);
 
-       tf_Call= new JTextField();
-       tf_Call.setBounds(200,410,200,30);
+        tf_Call= new JTextField();
+        tf_Call.setBounds(200,410,200,30);
         tf_Call.setBackground(  new Color(255, 255, 255, 255));
-       Altas_Pacientes.add(tf_Call);
+        Altas_Pacientes.add(tf_Call);
 
-       btn_Busc= new JButton(new ImageIcon("./assets/lupa.png"));
-       btn_Busc.setBounds(320,60,70,40);
-       btn_Busc.addActionListener(this);
-       Altas_Pacientes.add(btn_Busc);
+        btn_Busc= new JButton(new ImageIcon("./assets/lupa.png"));
+        btn_Busc.setBounds(320,60,70,40);
+        btn_Busc.addActionListener(this);
+        Altas_Pacientes.add(btn_Busc);
 
         btn_ActusliarPac= new JButton(new ImageIcon("./assets/modificar.png"));
         btn_ActusliarPac.addActionListener(this);
@@ -481,6 +504,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
         tfCons= new JTextField();
         tfCons.setBounds(310,640,40,20);
+        tfCons.setText("0");
         Altas_Pacientes.add(tfCons);
 
         btnDespues= new JButton(">");
@@ -512,8 +536,11 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
     }//main
     @Override
     public void actionPerformed(ActionEvent e) {
-        Component c=(Component) e.getSource();
-        if(c==itemBajas){
+        Component c = (Component) e.getSource();
+        if (c == itemBajas) {
+            tf_SSN1.setForeground(new Color(0, 76, 217));
+            tf_SSN1.setFont(new Font("Arial", Font.BOLD, 20));
+            actualizarTablas(table2);
             tf_SSN1.setEditable(true);
             btn_Busc_Cambios.setVisible(false);
             Altas_Pacientes.setVisible(true);
@@ -522,9 +549,9 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
             lbl_nomBtn.setText("Eliminar Paciente");
             lbl1.setText("Bajas");
-            tf_SSN1.setBounds(75,60,200,30);
+            tf_SSN1.setBounds(75, 60, 200, 30);
             fondo.setBackground(Color.red);
-            Altas_Pacientes.setBackground( new Color(255, 175, 0, 255));
+            Altas_Pacientes.setBackground(new Color(255, 175, 0, 255));
             Altas_Pacientes.setTitle("Bajas Pacientes");
 
             btn_ActusliarPac.setVisible(false);
@@ -545,9 +572,9 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             lbl1.setBounds(290, 0, 685, 40);
 
 
-            metodoHabilitar( tf_SSN1,btnBajaPac);
-            metodoDeshabilitar(tf_Nombre1,tf_am1, tf_ap1,tf_Edad, tf_Call,tf_Col,btnPrim,btnUlt,btnAntes,btnDespues,tfCons,comboColonias1, comboCalles,  comboEdad2,
-                    btn_Consulta,btn_Busc,btnBajaPac,btn_ActusliarPac,btn_Busc_Cambios,btnAgregarPaciente);
+            metodoHabilitar(tf_SSN1, btnBajaPac);
+            metodoDeshabilitar(tf_Nombre1, tf_am1, tf_ap1, tf_Edad, tf_Call, tf_Col, btnPrim, btnUlt, btnAntes, btnDespues, tfCons, comboColonias1, comboCalles, comboEdad2,
+                    btn_Consulta, btn_Busc, btnBajaPac, btn_ActusliarPac, btn_Busc_Cambios, btnAgregarPaciente);
 
             btnPrim.setVisible(false);
             btnDespues.setVisible(false);
@@ -555,17 +582,18 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             btnUlt.setVisible(false);
             tfCons.setVisible(false);
             metodoDeshabilitar(btn_Busc);
-            if(comboCalles.getItemCount()>0) {
+            if (comboCalles.getItemCount() > 0) {
                 metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboColonias1, comboCalles, comboEdad2);
                 comboCalles.setEnabled(false);
                 comboCalles.removeAllItems();
             } else if (tf_Edad.isVisible()) {
                 metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, tf_Edad, tf_Col, tf_Call);
-            } else{
+            } else {
                 metodoRestablecer(tf_SSN1, tf_am1, tf_Nombre1, tf_ap1, comboEdad2);
             }
         }// item bajas
-        else if (c==itemCambios) {
+        else if (c == itemCambios) {
+            actualizarTablas(table2);
             Altas_Pacientes.setTitle("Actualizar Paciente");
             metodoHabilitar(btn_ActusliarPac);
             btn_ActusliarPac.setVisible(true);
@@ -575,11 +603,11 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             btnBajaPac.setVisible(false);
             lbl_nomBtn.setText("Actualizar");
             lbl1.setText("Cambios Paciente");
-            tf_SSN1.setBounds(75,60,200,30);
+            tf_SSN1.setBounds(75, 60, 200, 30);
             fondo.setBackground(new Color(120, 2, 141, 255));
             Altas_Pacientes.setBackground(new Color(228, 164, 241, 255));
 
-            metodoDeshabilitar(tf_Edad,tf_Call,tf_Col,btn_Busc);
+            metodoDeshabilitar(tf_Edad, tf_Call, tf_Col, btn_Busc);
             tf_Edad.setVisible(false);
             tf_Call.setVisible(false);
             tf_Col.setVisible(false);
@@ -597,44 +625,105 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             btn_Busc.setVisible(false);
             btn_Busc_Cambios.setVisible(true);
             metodoRestablecer(tf_SSN1);
-            metodoHabilitar(tf_SSN1,btn_Busc_Cambios);
-            metodoDeshabilitar(btn_ActusliarPac,btn_Busc_Cambios,btnAgregarPaciente,btnBajaPac,tf_am1,tf_Nombre1,comboEdad2,tf_ap1,comboColonias1,comboCalles ,btn_Consulta,btnAntes,btnUlt,btnPrim,btnDespues,tfCons);
+            metodoHabilitar(tf_SSN1, btn_Busc_Cambios);
+            metodoDeshabilitar(btn_ActusliarPac, btn_Busc_Cambios, btnAgregarPaciente, btnBajaPac, tf_am1, tf_Nombre1, comboEdad2, tf_ap1, comboColonias1, comboCalles, btn_Consulta, btnAntes, btnUlt, btnPrim, btnDespues, tfCons);
 
         }//item cambio
-        else if (c==btn_Busc_Cambios) {
+        else if (c == btn_Busc_Cambios) {
             comboEdad2.setEnabled(true);
             comboColonias1.setEnabled(true);
             tf_SSN1.setEditable(false);
-          //  comboCalles.setEnabled(true);
+            //  comboCalles.setEnabled(true);
             tf_Nombre1.setEnabled(true);
             tf_ap1.setEnabled(true);
             tf_am1.setEnabled(true);
             btn_Busc.setEnabled(true);
             btn_ActusliarPac.setEnabled(true);
             btnBajaPac.setEnabled(true);
-        } else if (c==btn_Busc) {
-            metodoHabilitar(btnBajaPac);
 
-            int posT= Integer.parseInt(tf_SSN1.getText());
+            if (!(tf_SSN1.getText().equals(""))) {
 
-            for(int i =0;i<p1.buscarPacientes("").size();i++){
-                if(posT== p1.buscarPacientes("").get(i).getSSN()){
-                    tf_Nombre1.setText(p1.buscarPacientes("").get(i).getNombre());
-                    tf_ap1.setText( p1.buscarPacientes("").get(i).getPrimerAp());
-                    tf_am1.setText( p1.buscarPacientes("").get(i).getSegundoAp());
-                    tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(i).getEdad()));
-                    tf_Call.setText(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()-1).getNombre_Calle());
-                    tf_Col.setText(p1.buscarColonia("").get(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()).getID_Colonia()-1).getNombreColonia());
+                int posT = Integer.parseInt(tf_SSN1.getText());
+                int contBajas = 0;
+                for (int i = 0; i < p1.buscarPacientes("").size(); i++) {
+                    if (posT == p1.buscarPacientes("").get(i).getSSN() && tf_SSN1.getText() != "") {
+                        tf_Nombre1.setText(p1.buscarPacientes("").get(i).getNombre());
+                        tf_ap1.setText(p1.buscarPacientes("").get(i).getPrimerAp());
+                        tf_am1.setText(p1.buscarPacientes("").get(i).getSegundoAp());
+                        comboEdad2.setSelectedIndex(Integer.parseInt(String.valueOf(p1.buscarPacientes("").get(i).getEdad())));
+                        int contCol = 0;
+                        for (int j = 0; j < p1.buscarCalle("").size(); j++) {
+                            if (p1.buscarPacientes("").get(i).getCalle() == p1.buscarCalle("").get(j).getID_Calle()) {
+                                contCol = p1.buscarCalle("").get(j).getID_Colonia();
+                                break;
+                            }
+                        }
+                        String nomColonia = "";
+                        for (int k = 0; k < p1.buscarColonia("").size(); k++) {
+                            if (contCol == p1.buscarColonia("").get(k).getID_Colonia()) {
+                                nomColonia = p1.buscarColonia("").get(k).getNombreColonia();
+                                llenarComboColonia();
+                                comboColonias1.setSelectedIndex(contCol);
+                                break;
+                            }
+                        }
+                        for (int j = 0; j < p1.buscarCalle("").size(); j++) {
+                            if (p1.buscarCalle("").get(j).getID_Calle() == p1.buscarPacientes("").get(i).getCalle()) {
+                                comboCalles.removeAllItems();
+                                LlenarCB_Calles(contCol);
+                                comboCalles.setSelectedIndex(contCol);
+                            }
+                        }
+                        tf_SSN1.setText(String.valueOf(p1.buscarPacientes("").get(i).getSSN()));
+                    } else {
+                        contBajas++;
+                    }
+                    tf_Nombre1.setEditable(true);
+                    tf_am1.setEditable(true);
+                    tf_ap1.setEditable(true);
+
                 }
-                else {
-                    JOptionPane.showMessageDialog(getContentPane(),"Ese registro no se encuentra disponible o no existe!!!");
+                if (contBajas == p1.buscarPacientes("").size()) {
+
+                    JOptionPane.showMessageDialog(getContentPane(), "Ese registro no se encuentra disponible o no existe!!!");
                     btnBajaPac.setEnabled(false);
                     tf_SSN1.setText("");
+                    tf_SSN1.setEditable(true);
+
+
+                }
+                contBajas = 0;
+
+            } else {
+                JOptionPane.showMessageDialog(getContentPane(), "Error en busqueda, ingrese un ssn para poder buscarlo");
+                tf_SSN1.setEditable(true);
+            }
+
+        } else if (c == btn_Busc) {
+            metodoHabilitar(btnBajaPac);
+
+            int posT = Integer.parseInt(tf_SSN1.getText());
+
+            for (int i = 0; i < p1.buscarPacientes("").size(); i++) {
+                if (posT == p1.buscarPacientes("").get(i).getSSN() && tf_SSN1.getText() != ("")) {
+                    tf_Nombre1.setText(p1.buscarPacientes("").get(i).getNombre());
+                    tf_ap1.setText(p1.buscarPacientes("").get(i).getPrimerAp());
+                    tf_am1.setText(p1.buscarPacientes("").get(i).getSegundoAp());
+                    tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(i).getEdad()));
+                    tf_Call.setText(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle() - 1).getNombre_Calle());
+                    tf_Col.setText(p1.buscarColonia("").get(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()).getID_Colonia() - 1).getNombreColonia());
+                    break;
+                } else if (posT != p1.buscarPacientes("").get(i).getSSN() && tf_SSN1.getText() == ("")) {
+                    JOptionPane.showMessageDialog(getContentPane(), "Ese registro no se encuentra disponible o no existe!!!");
+                    btnBajaPac.setEnabled(false);
+                    tf_SSN1.setText("");
+                    break;
                 }
             }
 
 
-        } else if (c==itemConsultas) {
+        } else if (c == itemConsultas) {
+            actualizarTablas(table2);
             btn_ActusliarPac.setEnabled(false);
             btn_Consulta.setVisible(true);
             btn_Consulta.setEnabled(true);
@@ -643,8 +732,8 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             lbl1.setText("Consultas");
             fondo.setBackground(new Color(131, 220, 196, 203));
             lbl1.setBounds(260, 0, 685, 40);
-            Altas_Pacientes.setBackground( new Color(161, 156, 156, 250));
-            tf_SSN1.setBounds(200,60,200,30);
+            Altas_Pacientes.setBackground(new Color(161, 156, 156, 250));
+            tf_SSN1.setBounds(200, 60, 200, 30);
             tf_SSN1.setEnabled(false);
             Altas_Pacientes.setVisible(true);
             tf_Edad.setVisible(true);
@@ -669,40 +758,166 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
             btnPrim.setVisible(true);
             tfCons.setVisible(true);
 
-            metodoHabilitar(btnDespues,btnPrim,btnUlt,btnAntes);
-            metodoDeshabilitar(tf_SSN1,tf_Nombre1,tf_ap1,tf_am1,tf_Col,tf_Call,tf_Edad,btnAntes,btnPrim,btnUlt,btnDespues,tfCons);
-            metodoRestablecer(tf_SSN1,tf_Call,tf_Col,tf_am1,tf_ap1,tf_Nombre1,tf_Edad);
-
-
+            metodoHabilitar(btnDespues, btnPrim, btnUlt, btnAntes);
+            metodoDeshabilitar(tf_SSN1, tf_Nombre1, tf_ap1, tf_am1, tf_Col, tf_Call, tf_Edad, btnAntes, btnPrim, btnUlt, btnDespues, tfCons);
+            metodoRestablecer(tf_SSN1, tf_Call, tf_Col, tf_am1, tf_ap1, tf_Nombre1, tf_Edad);
+            btnDespues.setEnabled(true);
+            btnUlt.setEnabled(true);
+            btnAntes.setEnabled(true);
+            btnPrim.setEnabled(true);
+            tf_SSN1.setEnabled(true);
+            tf_SSN1.setEditable(false);
             btn_Busc_Cambios.setVisible(false);
-        }else if (comboCalles.getSelectedIndex()>0) {
-            for (int i=0;i<p1.buscarCalle("").size(); i++){
-                if(comboCalles.getSelectedItem().equals(p1.buscarCalle("").get(i).getNombre_Calle())){
-                    posVar= p1.buscarCalle("").get(i).getID_Calle();
+        } else if (comboCalles.getSelectedIndex() > 0) {
+            for (int i = 0; i < p1.buscarCalle("").size(); i++) {
+                if (comboCalles.getSelectedItem().equals(p1.buscarCalle("").get(i).getNombre_Calle())) {
+                    posVar = p1.buscarCalle("").get(i).getID_Calle();
                     break;
                 }
             }
-        } else if (c==btn_Busc_Cambios) {
-            metodoHabilitar(btnBajaPac);
+        } else if (btn_Consulta == c) {
+            tf_SSN1.setText(String.valueOf(Integer.parseInt(String.valueOf(p1.buscarPacientes("").get(0).getSSN()))));
+            tf_Nombre1.setText(p1.buscarPacientes("").get(0).getNombre());
+            tf_ap1.setText(p1.buscarPacientes("").get(0).getPrimerAp());
+            tf_am1.setText(p1.buscarPacientes("").get(0).getSegundoAp());
+            tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(0).getEdad()));
+                //=============
 
-            int posT= Integer.parseInt(tf_SSN1.getText());
-
-            for(int i =0;i<p1.buscarPacientes("").size();i++){
-                if(posT== p1.buscarPacientes("").get(i).getSSN()){
-                    tf_Nombre1.setText(p1.buscarPacientes("").get(i).getNombre());
-                    tf_ap1.setText( p1.buscarPacientes("").get(i).getPrimerAp());
-                    tf_am1.setText( p1.buscarPacientes("").get(i).getSegundoAp());
-                    tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(i).getEdad()));
-                    tf_Call.setText(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()-1).getNombre_Calle());
-                    tf_Col.setText(p1.buscarColonia("").get(p1.buscarCalle("").get(p1.buscarPacientes("").get(i).getCalle()).getID_Colonia()-1).getNombreColonia());
-                }
-                else {
-                    JOptionPane.showMessageDialog(getContentPane(),"Ese registro no se encuentra disponible o no existe!!!");
-                    btnBajaPac.setEnabled(false);
-                    tf_SSN1.setText("");
+            int varCol=0;
+            for(int i=0;i<p1.buscarPacientes("").size();i++){
+                for (int j=0;j<p1.buscarCalle("").size();j++) {
+                    if (p1.buscarPacientes("").get(0).getCalle() == p1.buscarCalle("").get(j).getID_Calle()) {
+                        varCol=p1.buscarCalle("").get(j).getID_Colonia();
+                        tf_Call.setText( p1.buscarCalle("").get(j).getNombre_Calle());
+                    }
                 }
             }
+            for (int j=0;j<p1.buscarColonia("").size();j++){
+                if(varCol==p1.buscarColonia("").get(j).getID_Colonia()){
+                    tf_Col.setText(p1.buscarColonia("").get(j).getNombreColonia());
+                }
+            }
+
+
+            //=============
+        tfCons.setText("1");
+        actualizarTablas(table2);
+     } else if (c==btnPrim) {
+
+            tf_SSN1.setText(String.valueOf(p1.buscarPacientes("").get(0).getSSN()));
+            tf_Nombre1.setText(p1.buscarPacientes("").get(0).getNombre());
+            tf_ap1.setText( p1.buscarPacientes("").get(0).getPrimerAp());
+            tf_am1.setText( p1.buscarPacientes("").get(0).getSegundoAp());
+            tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(0).getEdad()));
+       //====================
+int varCol=0;
+         for(int i=0;i<p1.buscarPacientes("").size();i++){
+                for (int j=0;j<p1.buscarCalle("").size();j++) {
+                    if (p1.buscarPacientes("").get(0).getCalle() == p1.buscarCalle("").get(j).getID_Calle()) {
+                        varCol=p1.buscarCalle("").get(j).getID_Colonia();
+                        tf_Call.setText( p1.buscarCalle("").get(j).getNombre_Calle());
+                    }
+                }
+         }
+             for (int j=0;j<p1.buscarColonia("").size();j++){
+                 if(varCol==p1.buscarColonia("").get(j).getID_Colonia()){
+                     tf_Col.setText(p1.buscarColonia("").get(j).getNombreColonia());
+                 }
+             }
+            //==============
+            tfCons.setText("1");
+        }else if(c==btnDespues){
+            if(Integer.parseInt(tfCons.getText())>=p1.buscarPacientes("").size()){
+
+            }else {
+                tf_SSN1.setText(String.valueOf(p1.buscarPacientes("").get(((Integer.parseInt((tfCons.getText()))))).getSSN()));
+                tf_Nombre1.setText( p1.buscarPacientes("").get(((Integer.parseInt(tfCons.getText())))).getNombre());
+                tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(Integer.parseInt(tfCons.getText())).getEdad()));
+                tf_ap1.setText( p1.buscarPacientes("").get((Integer.parseInt(tfCons.getText()))).getPrimerAp());
+                tf_am1.setText( p1.buscarPacientes("").get((Integer.parseInt(tfCons.getText()))).getSegundoAp());
+                //    tfSemestre4.setText(String.valueOf(p1.buscarPacientes("").get((Integer.parseInt(tfCons.getText()))).getSemestre()));
+                tfCons.setText(String.valueOf((Integer.parseInt(tfCons.getText()))+1));
+                int varCol=0;
+                for(int i=0;i<p1.buscarPacientes("").size();i++){
+                    for (int j=0;j<p1.buscarCalle("").size();j++) {
+                        if (p1.buscarPacientes("").get(Integer.parseInt(tfCons.getText())-1).getCalle() == p1.buscarCalle("").get(j).getID_Calle()) {
+                            tf_Call.setText( p1.buscarCalle("").get(j).getNombre_Calle());
+                            varCol=p1.buscarCalle("").get(j).getID_Colonia();
+                        }
+                    }
+                }
+                for (int j=0;j<p1.buscarColonia("").size();j++){
+                    if(varCol==p1.buscarColonia("").get(j).getID_Colonia()){
+                        tf_Col.setText(p1.buscarColonia("").get(j).getNombreColonia());
+                    }
+                }
+
+            }
+        } else if (c==btnAntes) {
+            if(Integer.parseInt(tfCons.getText())<=1){
+            }else {
+                tfCons.setText(String.valueOf(Integer.parseInt(tfCons.getText())-1));
+                //tfCons.setText(String.valueOf(Integer.parseInt(String.valueOf(Integer.parseInt(tfCons.getText())-1))));
+                tf_SSN1.setText(String.valueOf(p1.buscarPacientes("").get(((Integer.parseInt((tfCons.getText()))))-1).getSSN()));
+                tf_Nombre1.setText( p1.buscarPacientes("").get(((Integer.parseInt(tfCons.getText()))-1)).getNombre());
+                tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(Integer.parseInt(tfCons.getText())-1).getEdad()));
+                tf_ap1.setText( p1.buscarPacientes("").get((Integer.parseInt(tfCons.getText())-1)).getPrimerAp());
+                tf_am1.setText( p1.buscarPacientes("").get((Integer.parseInt(tfCons.getText())-1)).getSegundoAp());
+                int varCol=0;
+                for(int i=0;i<p1.buscarPacientes("").size();i++){
+                    for (int j=0;j<p1.buscarCalle("").size();j++) {
+                        if (p1.buscarPacientes("").get(Integer.parseInt(tfCons.getText())-1).getCalle() == p1.buscarCalle("").get(j).getID_Calle()) {
+                            tf_Call.setText( p1.buscarCalle("").get(j).getNombre_Calle());
+                            varCol=p1.buscarCalle("").get(j).getID_Colonia();
+                        }
+                    }
+                }
+                for (int j=0;j<p1.buscarColonia("").size();j++){
+                    if(varCol==p1.buscarColonia("").get(j).getID_Colonia()){
+                        tf_Col.setText(p1.buscarColonia("").get(j).getNombreColonia());
+                    }
+                }
+
+            }
+
+
+        } else if (c==btnUlt) {
+            tf_SSN1.setText(String.valueOf(p1.buscarPacientes("").get(p1.buscarPacientes("").size()-1).getSSN()));
+            tf_Nombre1.setText(p1.buscarPacientes("").get(p1.buscarPacientes("").size()-1).getNombre());
+            tf_ap1.setText( p1.buscarPacientes("").get(p1.buscarPacientes("").size()-1).getPrimerAp());
+            tf_am1.setText( p1.buscarPacientes("").get(p1.buscarPacientes("").size()-1).getSegundoAp());
+            tf_Edad.setText(String.valueOf(p1.buscarPacientes("").get(p1.buscarPacientes("").size()-1).getEdad()));
+            //====================
+            int varCol=0;
+            for(int i=0;i<p1.buscarPacientes("").size();i++){
+                for (int j=0;j<p1.buscarCalle("").size();j++) {
+                    if (p1.buscarPacientes("").get(p1.buscarPacientes("").size()-1).getCalle() == p1.buscarCalle("").get(j).getID_Calle()) {
+                        varCol=p1.buscarCalle("").get(j).getID_Colonia();
+                        tf_Call.setText( p1.buscarCalle("").get(j).getNombre_Calle());
+                    }
+                }
+            }
+            for (int j=0;j<p1.buscarColonia("").size();j++){
+                if(varCol==p1.buscarColonia("").get(j).getID_Colonia()){
+                    tf_Col.setText(p1.buscarColonia("").get(j).getNombreColonia());
+                }
+            }
+
+            //==============
+            tfCons.setText(String.valueOf(p1.buscarPacientes("").size()));
+        } else if (c==btn_ActusliarPac) {
+            for (int i=0;i<p1.buscarCalle("").size(); i++){
+
+                if(comboCalles.getSelectedItem().equals(p1.buscarCalle("").get(i).getNombre_Calle())){
+                    posVar= p1.buscarCalle("").get(i).getID_Calle();
+                }
+            }
+            JOptionPane.showMessageDialog(getContentPane(),p1.buscarCalle("").get(posVar).getNombre_Calle());
+            pm1= new Paciente(Integer.parseInt(tf_SSN1.getText()),tf_Nombre1.getText(),tf_ap1.getText(),tf_am1.getText(),(byte) Integer.parseInt(comboEdad2.getItemAt(comboEdad2.getSelectedIndex())),posVar);
+            System.out.println(p1.actualizarAlumno(pm1));
+            actualizarTablas(table2);
         }
+
     }
     public void metodoRestablecer(Component...componentes){
         for(Component x: componentes){
@@ -727,6 +942,7 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
 
     }
     public void LlenarCB_Calles(int pos) {
+        comboCalles.setEnabled(true);
         comboCalles.addItem("Selecciona tu calle");
         if (pos == 0) {
 
@@ -766,27 +982,40 @@ public class VentanaInicio extends JFrame implements ActionListener, KeyListener
         }//foreach
 
     }
-
+    public void actualizarTablas(JTable tabla){
+        String controlador="com.mysql.cj.jdbc.Driver";
+        String URL= "jdbc:mysql://localhost:3306/poyecto_farmacias";
+        String consulta="SELECT * FROM pacientes";
+        ResultSetTableModel modeloTabla=null;
+        try {
+            modeloTabla = new ResultSetTableModel(controlador,URL,consulta);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        tabla.setModel(modeloTabla);
+    }
     @Override
     public void keyTyped(KeyEvent e) {
         Component c=(Component) e.getSource();
         char caracter=e.getKeyChar();
-      if(c==tf_SSN1){
+        if(c==tf_SSN1){
 
-          if(!(caracter>47&&caracter<58)) {
-              e.consume();
-          }else{
-              btn_Busc.setEnabled(true);
-              btn_Busc_Cambios.setEnabled(true);
+            if(!(caracter>47&&caracter<58)) {
+                e.consume();
+            }else{
+                btn_Busc.setEnabled(true);
+                btn_Busc_Cambios.setEnabled(true);
 
-          }
+            }
 
-      } else if (c==tf_Nombre1||c==tf_ap1||c==tf_am1) {
+        } else if (c==tf_Nombre1||c==tf_ap1||c==tf_am1) {
 
-          if(!(caracter>64&&caracter<91||caracter>96&&caracter<123||caracter==32)) {
-              e.consume();
-          }
-      }
+            if(!(caracter>64&&caracter<91||caracter>96&&caracter<123||caracter==32)) {
+                e.consume();
+            }
+        }
 
     }
 

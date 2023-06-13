@@ -43,11 +43,14 @@ public class PacienteDAO {
 
     //==================================Cambios=================================
     public boolean actualizarAlumno (Paciente p){
+
+        // String sql="UPDATE Miembros SET  Nombre='"+a.getNombre() + "', Apellido='"+a.getApellido()+ "', Edad="+a.getEdad() +", Es_Actor='"+a.getEs_Actor() + "', ID_Calle="+a.getCalle() + " WHERE ID_Miembro = "+a.getID_Miembro()+""; //Esta linea es para poder seleccionar el objeto a modificar por medio de su numero del ID
         boolean res= false;
-        // UPDATE alumnos SET Nombre='x', PrimerAp="x",SegundoAp="x",Edad=0,Semestre=1,Carrera='x' WHERE NumeroControl='02';
-        String sql="UPDATE pacientes SET '"+p.getSSN()+"','"+p.getPrimerAp()+"','"+p.getSegundoAp()+
-                "',"+p.getEdad()+",'"+p.getCalle()+"' WHERE ssn='"+p.getSSN()+"'";
+        // UPDATE pacientes SET Nombre='x', PrimerAp="x",SegundoAp="x",edad=12,ID_calle=1 WHERE ssn='1'
+        String sql="UPDATE pacientes SET nombre='"+p.getNombre()+"',primerAp='"+p.getPrimerAp()+"',segundoAp='"+p.getSegundoAp()+
+                "',edad="+p.getEdad()+",ID_Calle="+p.getCalle()+" WHERE SSN= "+p.getSSN()+"";
         res = conexion.ejecutarInstruccionDML(sql);
+        System.out.println(sql);
         return res;
     }
     //==================================Consultas===============================
