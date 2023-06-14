@@ -8,21 +8,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-
-//import controlador.UsuarioDAO;
-//import modelo.Usuario;
+import javax.swing.*;
+import controlador.UsuarioDAO;
+import modelo.Usuario;
+import java.sql.Connection;
+import ConexionBD.ConexionBD;
 public class Login extends JFrame  {
 
     JLabel lblUsuario, lblContraseña;
@@ -34,7 +25,7 @@ public class Login extends JFrame  {
     JComboBox <String> cmbTipo;
     Color colorBoton = new Color(5, 27, 248);
     Color grisClaro = new Color(212,212,212);
-    //UsuarioDAO uDAO = new UsuarioDAO();
+    UsuarioDAO uDAO = new UsuarioDAO();
     boolean mostrarUsuarios = false;
     public static boolean bandera;
 
@@ -70,13 +61,7 @@ public class Login extends JFrame  {
         jpfContraseña.setBounds(50, 280, 185, 25);
         add(jpfContraseña);
 
-        String tipo[] = {"Selecciona tipo de usuario...","Gerente","Empleado"};
-        cmbTipo = new JComboBox<String>(tipo);
-        cmbTipo.setBounds(50, 325, 185, 30);
-        cmbTipo.setFont(new Font("Berlin Sans FB", Font.PLAIN, 16));
-        cmbTipo.setBackground(colorBoton);
-        cmbTipo.setForeground(grisClaro);
-        //add(cmbTipo);
+
 
         btnIngresar = new JButton("Ingresar");
         btnIngresar.setBounds(95, 340, 100, 35);
@@ -87,14 +72,15 @@ public class Login extends JFrame  {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                Connection c = ConexionBD.getConexion();
                 if (verificar()) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            if(true) {
+                            if(mostrarUsuarios) {
                                 new VentanaInicio();
                             }else {
-
+                                new VentanaInicio();
                             }
                         }
                     });
@@ -106,21 +92,28 @@ public class Login extends JFrame  {
         });
         add(btnIngresar);
     }
+
     public boolean verificar() {
-        /*try {
-            ArrayList<Usuario> listaUsuarios = uDAO.buscarUsuario("SELECT * FROM Usuarios WHERE nombre = '"+jtfUsuario.getText()+"'");
-            uDAO.setFiltro("SELECT * FROM Usuarios WHERE nombre = '"+jtfUsuario.getText()+"'");
-            Thread hilo=new Thread(uDAO);
+        try {
+            ArrayList<Usuario> listaUsuarios = uDAO.buscarUsuario("SELECT * FROM usuarios WHERE nombre = '"+jtfUsuario.getText()+"'");
+            uDAO.setFiltro("SELECT * FROM usuarios WHERE nombre = '"+jtfUsuario.getText()+"'");
+
+            Thread hilo = new Thread(uDAO);
             hilo.start();
-            if (listaUsuarios.size()!=0 && bandera) {
-                Usuario usuario = listaUsuarios.get(0);
-                mostrarUsuarios = usuario.getTipo().equals("Gerente");
-                return usuario.getContraseña().equals(jpfContraseña.getText());
-            }
+             if (listaUsuarios.size()!=0 && bandera) {
+                     Usuario usuario = listaUsuarios.get(0);
+                     return usuario.getContraseña().equals(jpfContraseña.getText());
+
+
+             }
+             else {
+                 return false;
+             }
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
-        */return true;
+        return true;
     }
 }

@@ -4,15 +4,15 @@ public class Usuario {
 	private byte noUsuario;
 	private String nombre;
 	private String contraseña;
-	private String tipo;
-	
-	public Usuario(byte noUsuario, String nombre, String contraseña, String tipo) {
+
+
+	public Usuario(byte noUsuario, String nombre, String contraseña) {
 		this.noUsuario = noUsuario;
 		this.nombre = nombre;
 		this.contraseña = contraseña;
-		this.tipo = tipo;
+
 	}
-	
+
 
 
 	public byte getNoUsuario() {
@@ -38,7 +38,7 @@ public class Usuario {
 		this.contraseña = contraseña;
 	}
 
-	
+
 
 
 

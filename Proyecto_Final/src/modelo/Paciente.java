@@ -70,4 +70,5 @@ public class Paciente {
     public void setCalle(int calle) {
         this.calle = calle;
     }
+
 }

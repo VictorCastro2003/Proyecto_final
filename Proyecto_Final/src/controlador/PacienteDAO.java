@@ -1,56 +1,40 @@
 package controlador;
-
-
 import ConexionBD.ConexionBD;
 import modelo.Paciente;
 import modelo.Calle;
 import modelo.Colonia;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 //DAO Data Access Objet
 public class PacienteDAO {
-    int num=0;
-    //Metodos ABCC (CRUD)
-    ConexionBD conexion = new ConexionBD();
-    //==================================Altas===================================
-    public boolean agregarPaciente(Paciente p){
-        boolean res= false;
-        /*
-         *Proceso Altas en MySQL
-         *  INSERT INTO alumnos VALUES("01","Goku","-","-",34,10,'ISC');
-         *
-         */
-        String sql="INSERT INTO pacientes VALUES('"+p.getSSN()+"','"+p.getNombre()+"','"+p.getPrimerAp()+"','"+p.getSegundoAp()+
-                "',"+p.getEdad()+",'"+p.getCalle()+"')";
 
-        res = conexion.ejecutarInstruccionDML(sql);
+    //Metodos ABCC (CRUD)
+    //==================================Altas===================================
+    public  boolean agregarPaciente(Paciente p){
+        boolean res= false;
+
+        res = ConexionBD. AgregarPaciente(p);
 
         return res;
     }
 
     //==================================Bajas===================================
-    public boolean eliminarPaciente(String SSN){
+    public  boolean eliminarPaciente(String SSN){
         boolean res= false;
 
         String sql="DELETE FROM pacientes WHERE SSN='"+SSN+"'";
-        res = conexion.ejecutarInstruccionDML(sql);
+        res = ConexionBD.EliminarPacientes(sql);
         return res;
     }
 
 
     //==================================Cambios=================================
-    public boolean actualizarAlumno (Paciente p){
-
+    public  boolean actualizarAlumno (Paciente p){
         // String sql="UPDATE Miembros SET  Nombre='"+a.getNombre() + "', Apellido='"+a.getApellido()+ "', Edad="+a.getEdad() +", Es_Actor='"+a.getEs_Actor() + "', ID_Calle="+a.getCalle() + " WHERE ID_Miembro = "+a.getID_Miembro()+""; //Esta linea es para poder seleccionar el objeto a modificar por medio de su numero del ID
         boolean res= false;
-        // UPDATE pacientes SET Nombre='x', PrimerAp="x",SegundoAp="x",edad=12,ID_calle=1 WHERE ssn='1'
-        String sql="UPDATE pacientes SET nombre='"+p.getNombre()+"',primerAp='"+p.getPrimerAp()+"',segundoAp='"+p.getSegundoAp()+
-                "',edad="+p.getEdad()+",ID_Calle="+p.getCalle()+" WHERE SSN= "+p.getSSN()+"";
-        res = conexion.ejecutarInstruccionDML(sql);
-        System.out.println(sql);
+            res=ConexionBD.ActualizarPaciente(p);
         return res;
     }
     //==================================Consultas===============================
@@ -58,14 +42,13 @@ public class PacienteDAO {
 
         return null;
     }
-    public ArrayList<Paciente> buscarPacientes(String filtro){
+    public  ArrayList<Paciente> buscarPacientes(String filtro){
         ArrayList<Paciente> listaPacientes= new ArrayList<>();
         String sql="SELECT * FROM pacientes";
-
-        ResultSet rs= conexion.ejecutarConsulta(sql);
+        ResultSet rs= ConexionBD.BuscarPaciente(sql);
         try {
             rs.next();
-            num++;
+
             do{
                 int ssn= rs.getInt(1);//Num control
                 String n=rs.getString(2);//Nombre
@@ -88,7 +71,7 @@ public class PacienteDAO {
         ArrayList<Calle> listaCalle= new ArrayList<>();
         String sql="SELECT * FROM calles";
 
-        ResultSet rs= conexion.ejecutarConsulta(sql);
+        ResultSet rs= ConexionBD.BuscarPaciente(sql);
         try {
             rs.next();
 
@@ -112,7 +95,7 @@ public class PacienteDAO {
         ArrayList<Colonia> listaColonia= new ArrayList<>();
         String sql="SELECT * FROM colonias";
 
-        ResultSet rs= conexion.ejecutarConsulta(sql);
+        ResultSet rs= ConexionBD.BuscarPaciente(sql);
         try {
             rs.next();
 

@@ -3,6 +3,7 @@ import modelo.Usuario;
 import Vista.Login;
 import ConexionBD.ConexionBD;
 
+import javax.swing.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,62 +20,18 @@ public class UsuarioDAO implements Runnable{
 		this.filtro = filtro;
 	}
 
-
-	public UsuarioDAO() {
-		conexion = new ConexionBD();
-	}
-
-
-	//Metodos para ALTAS, BJAS, CAMBIOS, CONSULTAS
-	public boolean insertarRragistro(Usuario u) {
-		boolean resultado = false;
-
-		String sql="INSERT INTO usuarios VALUES('"+u.getNoUsuario()+"', '"+u.getNombre()+"', '"+u.getContraseña()+"'8);";
-		System.out.println(sql);
-		resultado = conexion.ejecutarInstruccionDML(sql);
-
-		return resultado;
-	}
-
-
-	public boolean eliminarRegistro(String id){
-
-		boolean resultado = false;
-
-
-		String sql =  "DELETE FROM Usuarios WHERE noUsuario = \""+id+"\"";
-		resultado = conexion.ejecutarInstruccionDML(sql);
-
-		return resultado;
-	}
-
-
-	public boolean modificarRegistro(Usuario u) {
-
-		boolean resultado = false;
-
-		String sql = "UPDATE usuarios SET Nombre='"+u.getNombre()+"', Contrase�a='"+u.getContraseña()+"', Tipo='"+"'"
-				+" WHERE noUsuario = '" + u.getNoUsuario()+"';";
-
-
-		resultado = conexion.ejecutarInstruccionDML(sql);
-
-		return resultado;
-	}
-
 	//CONSULTAS
 	public ArrayList<Usuario> buscarUsuario (String filtro){
 		ArrayList<Usuario> listaUsuarios = new ArrayList<>();
 
-		ResultSet rs = conexion.ejecutarConsulta(filtro);
+		ResultSet rs= ConexionBD.BuscarPaciente(filtro);
 
 		try {
 			if(rs.next()) {
 				do {
 					listaUsuarios.add(new Usuario(rs.getByte(1),
 							rs.getString(2),
-							rs.getString(3),
-							rs.getString(4)));
+							rs.getString(3)));
 					Login.bandera = true;
 				}while(rs.next());
 			}else {
@@ -85,16 +42,19 @@ public class UsuarioDAO implements Runnable{
 			Login.bandera = false;
 		}
 
-
 		return listaUsuarios;
 	}
 
 
 	@Override
 	public void run() {
-		buscarUsuario(filtro);
+		//JOptionPane.showMessageDialog(null,"Buscando Registro!!!!!!!!!");
+		buscarUsuario(this.filtro);
 
 	}
+
+
+
 
 
 }
